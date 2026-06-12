@@ -1,0 +1,4 @@
+数据集含30个核心字段，分三大类精准适配离线分析需求：
+1. 歌曲元数据（15个）：含track_id（歌曲唯一标识）、track_name（歌曲名称）、artist_name（歌手/合作阵容）、genre（流行/摇滚/说唱等12类流派）、language（中文/粤语/英文等语种）、lyricist（作词者）、composer（作曲者）、release_year（发行年份）、song_version（录音室版/Live版等）、bitrate（音频比特率）、emotion_tag（治愈/励志等情感标签）、song_likes（累计点赞数）、song_comments（累计评论数）等，完整覆盖歌曲核心信息；
+2. 用户画像（5个）：包含user_id（用户唯一标识）、user_city（所在城市）、user_gender（性别）、age_range（年龄区间）、member_level（会员等级），贴合学生群体特征，支撑用户分层分析；
+3. 播放行为（10个）：涵盖play_time（播放时间戳）、platform（播放设备）、play_duration（实际播放时长）、track_total_duration（歌曲总时长）、is_skipped（是否跳过）、is_repeat（是否重复播放）、is_collected（是否收藏）、play_source（播放来源）等，精准记录用户交互行为，为行为规律挖掘提供数据支撑。
