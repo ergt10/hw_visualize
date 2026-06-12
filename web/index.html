@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>乐潮 MusicTide · 宏观时空流行趋势可视分析</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="lib/echarts.min.js"></script>
+</head>
+<body>
+  <header id="header">
+    <div id="brand">
+      <h1>乐潮 <span>MusicTide</span></h1>
+      <p>音乐流行趋势可视分析 · 宏观时空模块</p>
+    </div>
+    <div id="controls">
+      <div class="control-group">
+        <label>音乐风格</label>
+        <div id="genre-chips"></div>
+      </div>
+      <div class="control-group">
+        <label>地图指标</label>
+        <select id="metric-select"></select>
+      </div>
+      <button id="reset-btn">重置筛选</button>
+    </div>
+    <div id="scope-hint"></div>
+  </header>
+
+  <main id="grid">
+    <section class="panel" id="panel-geo">
+      <h2>地域流行格局 <small>气泡大小=播放量 · 颜色=所选指标 · 点击城市聚焦</small></h2>
+      <div class="chart" id="geo-chart"></div>
+    </section>
+    <section class="panel" id="panel-profile">
+      <h2 id="profile-title">区域画像</h2>
+      <div id="profile-body">
+        <div id="kpi-row"></div>
+        <div class="chart" id="pref-chart"></div>
+        <div id="track-list"></div>
+      </div>
+    </section>
+    <section class="panel" id="panel-trend">
+      <h2>播放热度时序演变 <small>2025-12 · 按风格堆叠 · 拖动下方滑块刷选日期范围</small></h2>
+      <div class="chart" id="trend-chart"></div>
+    </section>
+    <section class="panel" id="panel-rhythm">
+      <h2>城市听歌节律 <small>小时 × 城市播放热力</small></h2>
+      <div class="chart" id="rhythm-chart"></div>
+    </section>
+    <section class="panel" id="panel-river">
+      <h2>全球流派演变长河 <small>Spotify Top200 · 2017–2021 · 点击流派查看右侧生命周期</small></h2>
+      <div class="chart" id="river-chart"></div>
+    </section>
+    <section class="panel" id="panel-lifecycle">
+      <h2 id="lifecycle-title">热门歌曲生命周期</h2>
+      <div class="chart" id="lifecycle-chart"></div>
+    </section>
+  </main>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
