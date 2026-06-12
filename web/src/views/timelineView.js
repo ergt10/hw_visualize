@@ -15,19 +15,20 @@ export function initTimelineView(el, { china }) {
 
   chart.setOption({
     backgroundColor: 'transparent',
-    grid: { left: 46, right: 14, top: 18, bottom: 40 },
+    grid: { left: 14, right: 14, top: 8, bottom: 38 },
     legend: { show: false }, // 风格图例统一由顶部芯片承担
     tooltip: { trigger: 'axis', ...tooltip },
     xAxis: {
       type: 'category', data: dateLabels, boundaryGap: false,
       ...axis({ splitLine: { show: false } }),
     },
+    // 上下文条带：纵轴刻度无信息量，隐去以换取图形空间
     yAxis: {
-      type: 'value', name: '播放量',
-      ...axis(),
+      type: 'value',
+      ...axis({ axisLabel: { show: false }, splitLine: { show: false } }),
     },
     dataZoom: [{
-      type: 'slider', height: 16, bottom: 6,
+      type: 'slider', height: 14, bottom: 5, showDetail: false, showDataShadow: false,
       borderColor: LINE, backgroundColor: 'rgba(227,218,197,.25)',
       fillerColor: 'rgba(191,77,56,.12)',
       handleStyle: { color: ACCENT, borderColor: ACCENT },

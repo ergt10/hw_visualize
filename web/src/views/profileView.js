@@ -44,7 +44,7 @@ export function initProfileView({ china }) {
       const color = GENRE_COLORS[china.genres[t.genre]];
       return `<div class="trk">
         <span class="no">${i + 1}</span>
-        <div class="meta"><div class="t">${t.name}</div><div class="a">${t.artist} · ${t.emotion}</div></div>
+        <div class="meta"><span class="t">${t.name}</span><span class="a"> · ${t.artist} · ${t.emotion}</span></div>
         <div class="bar"><i style="width:${(plays / maxPlays * 100).toFixed(0)}%;background:${color}"></i></div>
         <span class="pv">${plays.toLocaleString()}</span>
       </div>`;

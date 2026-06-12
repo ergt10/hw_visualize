@@ -172,31 +172,31 @@ body {
 .chart { flex: 1; min-height: 0; }
 
 /* ---------- 城市画像（纯 DOM 排版） ---------- */
-#profile-body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 10px 14px; overflow: hidden; }
+#profile-body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 7px 14px 6px; overflow: hidden; }
 #profile-place { display: flex; align-items: baseline; gap: 8px; }
-#profile-place .name { font-family: var(--serif); font-size: 24px; font-weight: 700; }
+#profile-place .name { font-family: var(--serif); font-size: 20px; font-weight: 700; }
 #profile-place .range { font-size: 11px; color: var(--muted); }
 
 #kpi-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5px 12px;
-  margin: 8px 0;
+  gap: 4px 12px;
+  margin: 5px 0;
 }
-.kpi { border-top: 2px solid var(--line); padding-top: 4px; }
-.kpi .v { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.kpi .l { font-size: 10.5px; color: var(--muted); margin-top: 1px; display: flex; justify-content: space-between; }
+.kpi { border-top: 2px solid var(--line); padding-top: 2px; }
+.kpi .v { font-size: 14.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; }
 .kpi .d { font-weight: 600; }
 .kpi .d.up { color: var(--accent); }
 .kpi .d.down { color: #54718f; }
 
-#track-list { flex: 1; min-height: 0; overflow: hidden; border-top: 1px solid var(--line); padding-top: 7px; }
-#track-list .sec { font-size: 10.5px; color: var(--muted); letter-spacing: 2px; margin-bottom: 5px; }
-.trk { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+#track-list { flex: 1; min-height: 0; overflow: hidden; border-top: 1px solid var(--line); padding-top: 5px; }
+#track-list .sec { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-bottom: 3px; }
+.trk { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
 .trk .no { font-family: var(--serif); font-size: 13px; color: var(--muted); width: 14px; text-align: center; }
-.trk .meta { flex: 1; min-width: 0; }
-.trk .meta .t { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.trk .meta .a { font-size: 10px; color: var(--muted); }
+.trk .meta { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trk .meta .t { font-size: 12px; }
+.trk .meta .a { font-size: 10.5px; color: var(--muted); }
 .trk .bar { width: 74px; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; flex: none; }
 .trk .bar i { display: block; height: 100%; border-radius: 2px; }
 .trk .pv { font-size: 10.5px; color: var(--muted); width: 44px; text-align: right; font-variant-numeric: tabular-nums; }

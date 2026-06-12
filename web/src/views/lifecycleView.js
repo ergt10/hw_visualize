@@ -44,14 +44,30 @@ export function initLifecycleView(el, { spotify }) {
       const [name, artist] = key.split('|');
       const selected = st.track === key;
       const data = new Array(spotify.weeks.length).fill(null);
-      for (const [wi, streams] of spotify.curves[key]) data[wi] = streams;
+      let peak = 0, peakWi = 0;
+      for (const [wi, streams] of spotify.curves[key]) {
+        data[wi] = streams;
+        if (streams > peak) { peak = streams; peakWi = wi; }
+      }
+      const lineColor = selected ? '#3b3325' : shade(color, 1.15 - i * .09);
       return {
         name, type: 'line', data,
         smooth: true, symbol: 'none', connectNulls: false,
         z: selected ? 5 : 2,
         lineStyle: { width: selected ? 3 : 1.4, opacity: st.track && !selected ? .45 : 1 },
-        color: selected ? '#3b3325' : shade(color, 1.15 - i * .09),
+        color: lineColor,
         emphasis: { focus: 'series', lineStyle: { width: 3 } },
+        // 峰值处直接标注歌名（仅前 3 名与选中曲目，避免拥挤）
+        markPoint: (i < 3 || selected) ? {
+          silent: true, symbol: 'circle', symbolSize: 4,
+          itemStyle: { color: lineColor },
+          label: {
+            show: true, position: 'top', distance: 3,
+            color: lineColor, fontSize: 9.5, fontWeight: 600,
+            formatter: name.length > 14 ? name.slice(0, 13) + '…' : name,
+          },
+          data: [{ coord: [peakWi, peak] }],
+        } : undefined,
         tooltip: {
           formatter: p => `<b>${name}</b><br/>${artist}<br/>${p.name}：${p.value} 百万次/周`,
         },

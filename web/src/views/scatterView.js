@@ -52,18 +52,20 @@ export function initScatterView(el, { spotify }) {
   });
 
   function update(st) {
-    const data = spotify.tracks.map(t => {
+    const data = spotify.tracks.map((t, i) => {
       const focus = t[TCOL.GENRE] === st.evoGenre;
       const seasonal = t[TCOL.DECS] >= 3 && t[TCOL.WEEKS] <= 60;
       const selected = st.track === `${t[TCOL.NAME]}|${t[TCOL.ARTIST]}`;
+      // 在榜周数是整数，按行号做 ±4% 确定性抖动，打散 log 轴左侧的竖条纹
+      const jitter = 1 + ((i * 37 % 97) - 48) / 1200;
       return {
-        value: [Math.max(t[TCOL.WEEKS], 1), Math.max(t[TCOL.PEAK], 1.01)],
+        value: [Math.max(t[TCOL.WEEKS], 1) * jitter, Math.max(t[TCOL.PEAK], 1.01)],
         track: t,
         symbol: seasonal ? 'diamond' : 'circle',
-        symbolSize: selected ? 16 : 3 + 9 * Math.sqrt(t[TCOL.TOTAL] / 25),
+        symbolSize: selected ? 16 : 2.5 + 8 * Math.sqrt(t[TCOL.TOTAL] / 25),
         itemStyle: {
           color: SPOTIFY_COLORS[spotify.genres[t[TCOL.GENRE]]],
-          opacity: selected ? 1 : focus ? .85 : .18,
+          opacity: selected ? 1 : focus ? .9 : .38,
           borderColor: selected ? '#3b3325' : 'transparent',
           borderWidth: selected ? 1.5 : 0,
         },

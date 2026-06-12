@@ -3,7 +3,8 @@
 输出 web/data/spotify.json，结构：
   genres:      宏观流派列表（由 artist_genres 细分标签归并而来）
   months:      月份列表（2017-01 ~ 2021-04）
-  monthly:     [genreIdx][monthIdx] -> 月度总播放量（亿次）
+  monthly:     [genreIdx][monthIdx] -> 月均每周播放量（亿次/周）
+               （除以当月榜单周数：大小月含 4/5 个榜单周，直接累计会产生 ±25% 锯齿）
   weeks:       周标签列表
   weeklyTotal: 每周 Top200 总播放量（亿次），用于大盘事件标注
   tracks:      全部上榜歌曲的生命周期形态统计（曲海星图散点用）
@@ -75,6 +76,9 @@ def main():
             dedup[key] = dict(r)
 
     monthly = [[0] * len(months) for _ in genres]
+    weeks_in_month = [0] * len(months)
+    for w in weeks:
+        weeks_in_month[month_idx[parse_week(w).strftime("%Y-%m")]] += 1
     weekly_total = [0] * len(weeks)
     track_total = defaultdict(int)   # track_id -> 累计播放
     track_info = {}
@@ -121,7 +125,8 @@ def main():
     out = {
         "genres": genres,
         "months": months,
-        "monthly": [[round(v / 1e8, 3) for v in row] for row in monthly],  # 亿次
+        "monthly": [[round(v / n / 1e8, 3) for v, n in zip(row, weeks_in_month)]
+                    for row in monthly],  # 亿次/周
         "weeks": weeks,
         "weeklyTotal": [round(v / 1e8, 2) for v in weekly_total],
         "tracks": tracks,

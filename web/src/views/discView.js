@@ -33,7 +33,7 @@ export function initDiscView(el, { china }) {
       },
       style: {
         fill: api.visual('color'),
-        stroke: '#2a2620', lineWidth: .8,
+        stroke: '#26211a', lineWidth: .5,
         opacity: api.value(3) ? .25 : 1,
       },
     };
@@ -46,8 +46,8 @@ export function initDiscView(el, { china }) {
         type: 'text',
         style: {
           text: hour % 3 === 0 ? hour + '时' : '',
-          x: cx + Math.cos(mid) * (R + 9), y: cy + Math.sin(mid) * (R + 9),
-          fill: MUTED, font: '9px sans-serif',
+          x: cx + Math.cos(mid) * (R + 10), y: cy + Math.sin(mid) * (R + 10),
+          fill: MUTED, font: '10px "Noto Sans SC", sans-serif',
           textAlign: 'center', textVerticalAlign: 'middle',
         },
         silent: true,
@@ -63,8 +63,8 @@ export function initDiscView(el, { china }) {
       show: false,
       dimension: 2,
       min: 0, max: 1,
-      // 唱片质感：墨黑沟槽 -> 赭金亮纹
-      inRange: { color: ['#332e26', '#54452c', '#a87b2e', '#e8b54d', '#f7dfa0'] },
+      // 唱片质感：暖褐沟槽 -> 赭金亮纹
+      inRange: { color: ['#3a3328', '#5c4b2d', '#a87b2e', '#e8b54d', '#f7dfa0'] },
     },
     series: [{
       name: 'disc',

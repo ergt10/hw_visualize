@@ -1,5 +1,6 @@
-// 风格长河：Spotify 2017-2021 流派月度播放量主题河流图（ThemeRiver, Havre et al. 2002）。
-// 河面宽度 = 月播放量；叠加 COVID 封锁、圣诞季两类真实事件标注。
+// 风格长河：Spotify 2017-2021 流派月度演变主题河流图（ThemeRiver, Havre et al. 2002）。
+// 河面宽度 = 月均每周播放量（已按当月榜单周数归一，消除大小月锯齿）；
+// 叠加 COVID 封锁、圣诞季两类真实事件标注。
 // 点击流派 -> 切换曲海星图高亮与生命周期视图的当前流派。
 import { setState, subscribe } from '../store.js';
 import { SPOTIFY_COLORS, GENRE_BRIDGE } from '../dataService.js';
@@ -46,7 +47,7 @@ export function initRiverView(el, { china, spotify }) {
       label: { show: false },
       itemStyle: { borderColor: '#fbf8f1', borderWidth: .6 },
       emphasis: { itemStyle: { shadowBlur: 14, shadowColor: 'rgba(59,51,37,.35)' } },
-      tooltip: { valueFormatter: v => v + ' 亿次' },
+      tooltip: { valueFormatter: v => v + ' 亿次/周' },
     }],
   });
 
