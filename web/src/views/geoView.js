@@ -1,7 +1,8 @@
-// 地域流行格局：中国地图 + 城市气泡。
+// 乐潮地图：中国地图 + 城市气泡。
 // 气泡大小编码播放量，颜色编码控制面板所选指标；点击城市切换聚焦。
 import { state, setState, subscribe } from '../store.js';
 import { COL, METRICS, filterRows, groupBy, computeMetric, sumPlays } from '../dataService.js';
+import { SEQ, INK, MUTED, tooltip } from '../theme.js';
 
 export async function initGeoView(el, { china }) {
   const geoJson = await fetch('lib/china.json').then(r => r.json());
@@ -15,19 +16,19 @@ export async function initGeoView(el, { china }) {
       roam: true,
       zoom: 1.9,
       center: [111.5, 32],
-      itemStyle: { areaColor: '#1b2440', borderColor: '#2c3a5e' },
+      itemStyle: { areaColor: '#ede4cf', borderColor: '#d2c5a6', borderWidth: .8 },
       emphasis: { disabled: true },
       select: { disabled: true },
       label: { show: false },
     },
-    tooltip: { backgroundColor: '#1d2a4a', borderColor: '#36456e', textStyle: { color: '#cbd5e1' } },
+    tooltip,
     visualMap: {
       type: 'continuous',
-      left: 12, bottom: 10,
+      left: 12, bottom: 8,
       orient: 'horizontal',
-      itemWidth: 10, itemHeight: 90,
-      inRange: { color: ['#3b82f6', '#34d399', '#fbbf24', '#f87171'] },
-      textStyle: { color: '#7b8bb0', fontSize: 10 },
+      itemWidth: 9, itemHeight: 80,
+      inRange: { color: SEQ },
+      textStyle: { color: MUTED, fontSize: 10 },
     },
     series: [{
       name: 'cities',
@@ -36,10 +37,11 @@ export async function initGeoView(el, { china }) {
       symbolSize: v => v[3],
       label: {
         show: true, position: 'right', formatter: '{b}',
-        color: '#cbd5e1', fontSize: 11,
+        color: INK, fontSize: 11,
       },
       labelLayout: { hideOverlap: true },
-      emphasis: { scale: 1.2, label: { color: '#fff' } },
+      itemStyle: { shadowBlur: 6, shadowColor: 'rgba(59,51,37,.3)' },
+      emphasis: { scale: 1.2, label: { fontWeight: 'bold' } },
     }],
   });
 
@@ -62,10 +64,10 @@ export async function initGeoView(el, { china }) {
       return {
         name: c.name,
         // [经度, 纬度, 指标值(供 visualMap), 气泡尺寸, 播放量]
-        value: [c.lng, c.lat, value, 14 + 22 * Math.sqrt(sumPlays(rows) / maxPlays), sumPlays(rows)],
+        value: [c.lng, c.lat, value, 13 + 21 * Math.sqrt(sumPlays(rows) / maxPlays), sumPlays(rows)],
         itemStyle: st.city === i
-          ? { borderColor: '#fff', borderWidth: 2 }
-          : { borderColor: 'rgba(255,255,255,.25)', borderWidth: 1 },
+          ? { borderColor: '#3b3325', borderWidth: 2 }
+          : { borderColor: 'rgba(251,248,241,.9)', borderWidth: 1.2 },
         label: { fontWeight: st.city === i ? 'bold' : 'normal' },
       };
     });

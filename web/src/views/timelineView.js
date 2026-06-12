@@ -1,37 +1,38 @@
-// 播放热度时序演变：按风格堆叠的面积图，底部 dataZoom 滑块充当日期刷选器。
-// 视图自身展示完整 25 天，刷选结果写回 store 驱动其他视图。
+// 时光轴：按风格堆叠的窄幅面积图，底部 dataZoom 滑块充当全局日期刷选器。
+// 视图自身展示完整 25 天（周末以灰带标出），刷选结果写回 store 驱动其他视图。
 import { state, setState, subscribe } from '../store.js';
 import { COL, GENRE_COLORS, filterRows } from '../dataService.js';
+import { LINE, MUTED, ACCENT, tooltip, axis } from '../theme.js';
 
-export function initTrendView(el, { china }) {
+export function initTimelineView(el, { china }) {
   const chart = echarts.init(el);
   const dateLabels = china.dates.map(d => d.slice(5));
+  // 周末日期下标（2025-12-06 是周六）
+  const weekends = china.dates
+    .map((d, i) => [new Date(d).getDay(), i])
+    .filter(([w]) => w === 0 || w === 6)
+    .map(([, i]) => i);
 
   chart.setOption({
     backgroundColor: 'transparent',
-    grid: { left: 48, right: 16, top: 28, bottom: 44 },
+    grid: { left: 46, right: 14, top: 18, bottom: 40 },
     legend: { show: false }, // 风格图例统一由顶部芯片承担
-    tooltip: {
-      trigger: 'axis',
-      backgroundColor: '#1d2a4a', borderColor: '#36456e', textStyle: { color: '#cbd5e1' },
-    },
+    tooltip: { trigger: 'axis', ...tooltip },
     xAxis: {
       type: 'category', data: dateLabels, boundaryGap: false,
-      axisLine: { lineStyle: { color: '#36456e' } },
-      axisLabel: { color: '#7b8bb0', fontSize: 10 },
+      ...axis({ splitLine: { show: false } }),
     },
     yAxis: {
-      type: 'value', name: '播放量', nameTextStyle: { color: '#7b8bb0', fontSize: 10 },
-      splitLine: { lineStyle: { color: '#1d2a4a' } },
-      axisLabel: { color: '#7b8bb0', fontSize: 10 },
+      type: 'value', name: '播放量',
+      ...axis(),
     },
     dataZoom: [{
-      type: 'slider', height: 18, bottom: 6,
-      borderColor: '#36456e', backgroundColor: '#131c33',
-      fillerColor: 'rgba(251,191,36,.15)',
-      handleStyle: { color: '#fbbf24' },
+      type: 'slider', height: 16, bottom: 6,
+      borderColor: LINE, backgroundColor: 'rgba(227,218,197,.25)',
+      fillerColor: 'rgba(191,77,56,.12)',
+      handleStyle: { color: ACCENT, borderColor: ACCENT },
       moveHandleSize: 0,
-      textStyle: { color: '#7b8bb0', fontSize: 10 },
+      textStyle: { color: MUTED, fontSize: 10 },
     }],
   });
 
@@ -59,12 +60,18 @@ export function initTrendView(el, { china }) {
       }
       return {
         name: g, type: 'line', stack: 'total', smooth: true,
-        symbol: 'none', areaStyle: { opacity: .55 },
-        lineStyle: { width: 1.5 },
+        symbol: 'none', areaStyle: { opacity: .7 },
+        lineStyle: { width: 1 },
         color: GENRE_COLORS[g],
         data: active.has(gi) ? daily : [],
       };
     });
+    // 周末灰带挂在第一个系列上
+    series[0].markArea = {
+      silent: true,
+      itemStyle: { color: 'rgba(59,51,37,.05)' },
+      data: weekends.map(i => [{ xAxis: Math.max(i - .5, 0) }, { xAxis: Math.min(i + .5, china.dates.length - 1) }]),
+    };
     chart.setOption({ series });
     // 外部重置筛选时同步滑块位置
     if (st.dateRange === null) {

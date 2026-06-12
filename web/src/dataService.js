@@ -2,15 +2,18 @@
 // china.rows 的列定义：[城市, 日期, 小时, 歌曲, 播放量, 收藏数, 重复数, 时长和, 完播数]
 export const COL = { CITY: 0, DATE: 1, HOUR: 2, TRACK: 3, PLAYS: 4, COLLECTS: 5, REPEATS: 6, DUR: 7, FULLS: 8 };
 
-// 中国数据集 4 个风格的色板（与图例、芯片、标签共用）
-export const GENRE_COLORS = { '流行': '#fbbf24', '摇滚': '#f87171', '说唱': '#60a5fa', '电子': '#34d399' };
+// 中国数据集 4 个风格的色板（与图例、芯片、标签共用），取自全局暖纸色系
+export const GENRE_COLORS = { '流行': '#d9a13b', '摇滚': '#bf4d38', '说唱': '#54718f', '电子': '#6f8f5d' };
 
-// Spotify 宏观流派色板
+// Spotify 宏观流派色板（与中国色板同源：流行/摇滚/嘻哈/电子色相一致，便于跨数据集对照）
 export const SPOTIFY_COLORS = {
-  '流行': '#fbbf24', '嘻哈/说唱': '#60a5fa', '摇滚/金属': '#f87171',
-  '电子/舞曲': '#34d399', '拉丁/雷鬼顿': '#f472b6', 'K-Pop': '#c084fc',
-  'R&B/灵魂': '#fb923c', '乡村': '#a3e635', '其他': '#94a3b8',
+  '流行': '#d9a13b', '嘻哈/说唱': '#54718f', '摇滚/金属': '#bf4d38',
+  '电子/舞曲': '#6f8f5d', '拉丁/雷鬼顿': '#cf7a45', 'K-Pop': '#ad6e95',
+  'R&B/灵魂': '#946b4c', '乡村': '#8f9a55', '其他': '#aaa294',
 };
+
+// Spotify tracks 形态统计的列定义（见 build_spotify.py）
+export const TCOL = { NAME: 0, ARTIST: 1, GENRE: 2, TOTAL: 3, PEAK: 4, WEEKS: 5, DEBUT: 6, DECS: 7 };
 
 // 中国风格 -> Spotify 宏观流派 的语义映射，用于跨数据集联动
 export const GENRE_BRIDGE = { '流行': '流行', '摇滚': '摇滚/金属', '说唱': '嘻哈/说唱', '电子': '电子/舞曲' };
@@ -74,4 +77,27 @@ export function sumPlays(rows) {
   let s = 0;
   for (const r of rows) s += r[COL.PLAYS];
   return s;
+}
+
+// 偏好指数（Location Quotient）：城市内某风格份额 / 全国该风格份额。
+// >1 表示该城市对该风格的偏好高于全国平均。
+export function locationQuotient(china, rows) {
+  const cityGenre = {};  // cityIdx -> genreIdx -> plays
+  const cityTotal = {}, genreTotal = {};
+  let total = 0;
+  for (const r of rows) {
+    const c = r[COL.CITY], g = china.tracks[r[COL.TRACK]].genre, p = r[COL.PLAYS];
+    (cityGenre[c] ??= {})[g] = (cityGenre[c][g] || 0) + p;
+    cityTotal[c] = (cityTotal[c] || 0) + p;
+    genreTotal[g] = (genreTotal[g] || 0) + p;
+    total += p;
+  }
+  const lq = {};
+  for (const c in cityGenre)
+    for (const g in cityGenre[c]) {
+      const share = cityGenre[c][g] / cityTotal[c];
+      const base = genreTotal[g] / total;
+      (lq[c] ??= {})[g] = base ? share / base : 0;
+    }
+  return lq;
 }

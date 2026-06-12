@@ -2,10 +2,13 @@
 import { state, setState, subscribe } from './store.js';
 import { loadData, GENRE_COLORS, METRICS } from './dataService.js';
 import { initGeoView } from './views/geoView.js';
-import { initTrendView } from './views/trendView.js';
-import { initRhythmView } from './views/rhythmView.js';
+import { initDiscView } from './views/discView.js';
 import { initProfileView } from './views/profileView.js';
-import { initEvolutionView } from './views/evolutionView.js';
+import { initTimelineView } from './views/timelineView.js';
+import { initMatrixView } from './views/matrixView.js';
+import { initRiverView } from './views/riverView.js';
+import { initScatterView } from './views/scatterView.js';
+import { initLifecycleView } from './views/lifecycleView.js';
 
 const data = await loadData();
 const { china } = data;
@@ -16,7 +19,6 @@ china.genres.forEach((g, gi) => {
   const chip = document.createElement('span');
   chip.className = 'chip active';
   chip.textContent = g;
-  chip.style.setProperty('--chip-color', GENRE_COLORS[g]);
   chip.onclick = () => {
     const current = state.genres ?? new Set(china.genres.map((_, i) => i));
     const next = new Set(current);
@@ -36,35 +38,39 @@ metricEl.onchange = () => setState({ metric: metricEl.value });
 // ---------- 重置 ----------
 document.getElementById('reset-btn').onclick = () => {
   metricEl.value = 'plays';
-  setState({ city: null, dateRange: null, genres: null, metric: 'plays' });
+  setState({ city: null, dateRange: null, genres: null, metric: 'plays', track: null });
 };
 
 // ---------- 顶部筛选状态提示 + 芯片样式同步 ----------
 subscribe(st => {
   const parts = [];
-  if (st.city !== null) parts.push(`聚焦 ${china.cities[st.city].name}`);
+  if (st.city !== null) parts.push(`聚焦 <b>${china.cities[st.city].name}</b>`);
   if (st.dateRange !== null) {
-    parts.push(`${china.dates[st.dateRange[0]].slice(5)} ~ ${china.dates[st.dateRange[1]].slice(5)}`);
+    parts.push(`<b>${china.dates[st.dateRange[0]].slice(5)} ~ ${china.dates[st.dateRange[1]].slice(5)}</b>`);
   }
-  if (st.genres !== null) parts.push([...st.genres].map(i => china.genres[i]).join('/'));
-  document.getElementById('scope-hint').textContent =
+  if (st.genres !== null) parts.push(`<b>${[...st.genres].map(i => china.genres[i]).join(' / ')}</b>`);
+  document.getElementById('scope-hint').innerHTML =
     parts.length ? '当前筛选：' + parts.join(' · ') : '';
 
   const active = st.genres ?? new Set(china.genres.map((_, i) => i));
-  [...chipsEl.children].forEach((chip, i) => chip.classList.toggle('active', active.has(i)));
+  [...chipsEl.children].forEach((chip, i) => {
+    const on = active.has(i);
+    chip.classList.toggle('active', on);
+    chip.style.background = on ? GENRE_COLORS[china.genres[i]] : '';
+  });
 });
 
 // ---------- 初始化视图 ----------
+const $ = id => document.getElementById(id);
 const charts = [
-  await initGeoView(document.getElementById('geo-chart'), data),
-  initTrendView(document.getElementById('trend-chart'), data),
-  initRhythmView(document.getElementById('rhythm-chart'), data),
+  await initGeoView($('geo-chart'), data),
+  initDiscView($('disc-chart'), data),
   initProfileView(data),
-  ...initEvolutionView(
-    document.getElementById('river-chart'),
-    document.getElementById('lifecycle-chart'),
-    data,
-  ),
+  initTimelineView($('timeline-chart'), data),
+  initMatrixView($('matrix-chart'), data),
+  initLifecycleView($('lifecycle-chart'), data), // 先于河流图：确保 evoGenre 默认值就绪
+  initRiverView($('river-chart'), data),
+  initScatterView($('scatter-chart'), data),
 ];
 
 window.addEventListener('resize', () => charts.forEach(c => c.resize()));

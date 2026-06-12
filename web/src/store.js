@@ -6,7 +6,8 @@ export const state = {
   dateRange: null,   // [起始日下标, 结束日下标]，null = 全部日期
   genres: null,      // 选中风格下标集合（Set），null = 全部风格
   metric: 'plays',   // 地图颜色编码指标
-  evoGenre: null,    // 生命周期视图当前流派（Spotify 宏观流派下标），初始化时设为"流行"
+  evoGenre: null,    // 演变视图当前流派（Spotify 宏观流派下标），初始化时设为"流行"
+  track: null,       // 曲海星图选中的歌曲 "歌名|艺人"，null = 未选
 };
 
 const listeners = [];
