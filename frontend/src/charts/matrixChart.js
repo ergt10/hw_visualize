@@ -9,17 +9,17 @@ export function initMatrixChart(el, data, store) {
 
   chart.setOption({
     backgroundColor: 'transparent',
-    grid: { left: 40, right: 14, top: 8, bottom: 36 },
+    grid: { left: 46, right: 18, top: 14, bottom: 34 },
     tooltip,
     xAxis: {
       type: 'category',
       data: cities,
-      ...axis({ splitLine: { show: false }, axisLabel: { color: MUTED, fontSize: 10, interval: 0 } }),
+      ...axis({ splitLine: { show: false }, axisLabel: { color: MUTED, fontSize: 10.5, interval: 0, margin: 10 } }),
     },
     yAxis: {
       type: 'category',
       data: china.genres,
-      ...axis({ splitLine: { show: false }, axisLabel: { color: INK, fontSize: 11, interval: 0 } }),
+      ...axis({ splitLine: { show: false }, axisLabel: { color: INK, fontSize: 11.5, interval: 0, margin: 10 } }),
     },
     visualMap: {
       type: 'continuous',
@@ -32,7 +32,7 @@ export function initMatrixChart(el, data, store) {
     series: [{
       name: 'lq',
       type: 'heatmap',
-      label: { show: true, fontSize: 9.5, color: INK, formatter: p => p.value[2].toFixed(2) },
+      label: { show: true, fontSize: 10.5, color: INK, formatter: p => p.value[2].toFixed(2) },
       itemStyle: { borderColor: '#fbf8f1', borderWidth: 2, borderRadius: 2 },
       emphasis: { itemStyle: { borderColor: '#3b3325', borderWidth: 1 } },
     }],
