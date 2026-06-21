@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -m http.server 8000)",
+      "Bash(curl -s http://127.0.0.1:8000/spotify-top-200-dataset.csv)",
+      "Bash(curl -s http://127.0.0.1:8000/spotify.html)",
+      "Bash(pkill -f \"http.server\")",
+      "Bash(python3 -m http.server 8080)",
+      "Bash(curl -s http://127.0.0.1:8080/spotify-top-200-dataset.csv)",
+      "Bash(node -e ' *)",
+      "Bash(curl -s http://localhost:8000/spotify-top-200-mini.csv)",
+      "Bash(find /Users/stddf/Desktop -name \"*.html\" ! -path \"*/.claude/*\" 2>/dev/null)",
+      "Read(//Users/stddf/Desktop/**)",
+      "Bash(mkdir -p /Users/stddf/Desktop/spotify-viz)",
+      "Bash(cp /Users/stddf/Desktop/spotify/index.html /Users/stddf/Desktop/spotify/spotify-top-200-mini.csv /Users/stddf/Desktop/spotify_2/correlation_matrix.csv /Users/stddf/Desktop/qq/sunburst.json /Users/stddf/Desktop/spotify-viz/)"
+    ]
+  }
+}
