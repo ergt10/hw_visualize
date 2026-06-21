@@ -1,25 +1,24 @@
-// 生命周期：当前流派累计播放 Top 8 歌曲的周播放曲线（单色系深浅区分），
-// 曲线形态直接呈现"爆发-持续-衰退"；星图选中的歌曲以高亮粗线叠加。
-import { state, setState, subscribe } from '../store.js';
-import { SPOTIFY_COLORS, TCOL } from '../dataService.js';
-import { tooltip, axis } from '../theme.js';
+import echarts from './echarts.js';
+import { SPOTIFY_COLORS, TCOL } from '../services/dataService.js';
+import { tooltip, axis } from '../styles/chartTheme.js';
 
-export function initLifecycleView(el, { spotify }) {
-  if (state.evoGenre === null) state.evoGenre = spotify.genres.indexOf('流行');
+export function initLifecycleChart(el, data, store) {
+  const { spotify } = data;
+  if (store.evoGenre === null) store.setState({ evoGenre: spotify.genres.indexOf('流行') });
   const chart = echarts.init(el);
-  const titleEl = document.getElementById('lifecycle-title');
-  const tagHtml = titleEl.querySelector('.tag').outerHTML;
 
   chart.setOption({
     backgroundColor: 'transparent',
     grid: { left: 42, right: 14, top: 24, bottom: 22 },
     tooltip: { trigger: 'item', ...tooltip },
     xAxis: {
-      type: 'category', data: spotify.weeks.map(formatWeek),
+      type: 'category',
+      data: spotify.weeks.map(formatWeek),
       ...axis({ axisLabel: { fontSize: 9, interval: 25 }, splitLine: { show: false } }),
     },
     yAxis: {
-      type: 'value', name: '周播放(百万)',
+      type: 'value',
+      name: '周播放(百万)',
       ...axis(),
     },
   });
@@ -27,10 +26,6 @@ export function initLifecycleView(el, { spotify }) {
   function update(st) {
     const g = spotify.genres[st.evoGenre];
     const color = SPOTIFY_COLORS[g];
-    titleEl.innerHTML = `${tagHtml}生命周期 · <span style="color:${color}">${g}</span>
-      <small>累计播放 Top 8 · 点击星图加入歌曲</small>`;
-
-    // 该流派 Top 8（按累计播放降序，预处理已排序）+ 星图选中曲目
     const keys = [];
     for (const t of spotify.tracks) {
       if (t[TCOL.GENRE] !== st.evoGenre) continue;
@@ -43,27 +38,39 @@ export function initLifecycleView(el, { spotify }) {
     const series = keys.map((key, i) => {
       const [name, artist] = key.split('|');
       const selected = st.track === key;
-      const data = new Array(spotify.weeks.length).fill(null);
+      const lineData = new Array(spotify.weeks.length).fill(null);
       let peak = 0, peakWi = 0;
       for (const [wi, streams] of spotify.curves[key]) {
-        data[wi] = streams;
-        if (streams > peak) { peak = streams; peakWi = wi; }
+        lineData[wi] = streams;
+        if (streams > peak) {
+          peak = streams;
+          peakWi = wi;
+        }
       }
       const lineColor = selected ? '#3b3325' : shade(color, 1.15 - i * .09);
       return {
-        name, type: 'line', data,
-        smooth: true, symbol: 'none', connectNulls: false,
+        name,
+        type: 'line',
+        data: lineData,
+        smooth: true,
+        symbol: 'none',
+        connectNulls: false,
         z: selected ? 5 : 2,
         lineStyle: { width: selected ? 3 : 1.4, opacity: st.track && !selected ? .45 : 1 },
         color: lineColor,
         emphasis: { focus: 'series', lineStyle: { width: 3 } },
-        // 峰值处直接标注歌名（仅前 3 名与选中曲目，避免拥挤）
         markPoint: (i < 3 || selected) ? {
-          silent: true, symbol: 'circle', symbolSize: 4,
+          silent: true,
+          symbol: 'circle',
+          symbolSize: 4,
           itemStyle: { color: lineColor },
           label: {
-            show: true, position: 'top', distance: 3,
-            color: lineColor, fontSize: 9.5, fontWeight: 600,
+            show: true,
+            position: 'top',
+            distance: 3,
+            color: lineColor,
+            fontSize: 9.5,
+            fontWeight: 600,
             formatter: name.length > 14 ? name.slice(0, 13) + '…' : name,
           },
           data: [{ coord: [peakWi, peak] }],
@@ -73,17 +80,17 @@ export function initLifecycleView(el, { spotify }) {
         },
       };
     });
-    chart.setOption({ series }, { replaceMerge: 'series' });
+    chart.setOption({ series }, { replaceMerge: ['series'] });
   }
 
   chart.on('click', p => {
-    // 点击曲线 -> 选中/取消选中该歌曲
     const key = Object.keys(spotify.curves).find(k => k.startsWith(p.seriesName + '|'));
-    if (key) setState({ track: state.track === key ? null : key });
+    if (key) store.setState({ track: store.track === key ? null : key });
   });
 
-  subscribe(update);
-  update(state);
+  const unsubscribe = store.$subscribe((_, st) => update(st));
+  update(store.$state);
+  chart.__dispose = () => unsubscribe();
   return chart;
 }
 
@@ -92,7 +99,6 @@ function formatWeek(w) {
   return `${y}-${m.padStart(2, '0')}`;
 }
 
-// 颜色乘法调暗/调亮，用于同流派多曲线的深浅渐变
 function shade(hex, k) {
   const n = parseInt(hex.slice(1), 16);
   const f = c => Math.round(Math.min(255, Math.max(0, c * k)));

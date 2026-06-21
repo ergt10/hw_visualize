@@ -1,6 +1,6 @@
 """Spotify 2017-2021 周榜数据预处理：周榜明细 -> 宏观流派月度演变 + 歌曲生命周期 + 形态统计。
 
-输出 web/data/spotify.json，结构：
+输出 frontend/public/data/spotify.json，结构：
   genres:      宏观流派列表（由 artist_genres 细分标签归并而来）
   months:      月份列表（2017-01 ~ 2021-04）
   monthly:     [genreIdx][monthIdx] -> 月均每周播放量（亿次/周）
@@ -23,7 +23,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "data/raw/spotify-top-200-dataset.csv"
-DST = ROOT / "web/data/spotify.json"
+DST = ROOT / "frontend/public/data/spotify.json"
 
 # (宏观流派, 关键词列表)，按优先级从上到下匹配
 GENRE_RULES = [

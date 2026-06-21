@@ -1,6 +1,6 @@
 """中国 2025-12 播放数据预处理：原始播放记录 -> 前端可用的紧凑明细 + 维表。
 
-输出 web/data/china.json，结构：
+输出 frontend/public/data/china.json，结构：
   cities:  城市维表（名称、坐标、所属省份 adcode）
   genres:  流派维表
   tracks:  歌曲维表（歌名、歌手、流派、情感标签、点赞、评论）
@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "data/raw/music_play_hot_songs_2025.csv"
-DST = ROOT / "web/data/china.json"
+DST = ROOT / "frontend/public/data/china.json"
 
 # 城市坐标与所属省份（adcode 对应 GeoJSON 中的省级行政区）
 CITY_INFO = {

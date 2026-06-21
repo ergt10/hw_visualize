@@ -12,16 +12,13 @@
 
 ## 运行方式
 
-纯静态前端，无需安装任何依赖（ECharts 已随仓库附带），任意静态文件服务器即可运行：
-
 ```bash
-cd web
-python3 -m http.server 8000
-# 浏览器打开 http://localhost:8000
+cd frontend
+npm install
+npm run dev
 ```
 
-或使用 `npx serve web`、VS Code Live Server 等任意等价方式。
-推荐 1600px 以上宽度的浏览器窗口。
+系统使用 Vue 3 + Vite + Pinia + ECharts/D3，推荐 1600px 以上宽度的浏览器窗口。
 
 ## 目录结构
 
@@ -30,21 +27,20 @@ python3 -m http.server 8000
 ├── preprocess/                Python 预处理脚本（标准库实现，无第三方依赖）
 │   ├── build_china.py         播放明细 -> 紧凑聚合立方体 china.json
 │   └── build_spotify.py       周榜明细 -> 流派月度演变 + 歌曲生命周期 spotify.json
-└── web/                       前端（原生 ES Module，无构建步骤）
+└── frontend/                  Vue 3 + Vite 前端工程
     ├── index.html
-    ├── lib/                   echarts 5.5.1 + 中国地图 GeoJSON（本地附带）
-    ├── data/                  预处理产物（已生成，可直接运行）
+    ├── public/                预处理产物、ECharts 5.5.1、中国地图 GeoJSON
     └── src/
-        ├── store.js           中央状态仓库：视图联动的唯一通道
-        ├── dataService.js     数据加载与公共聚合逻辑
-        ├── theme.js           视觉设计令牌（色板/字体/公共图表样式）
-        ├── main.js            入口与控制面板
-        └── views/             八个视图，每个一个模块
+        ├── stores/            Pinia 中央状态仓库：视图联动的唯一通道
+        ├── services/          数据加载与公共聚合逻辑
+        ├── styles/            视觉设计令牌（色板/字体/公共图表样式）
+        ├── charts/            ECharts 视图初始化逻辑
+        └── components/        Vue 页面组件
 ```
 
 ## 数据加载方式
 
-`web/data/` 下的 JSON 已随仓库提供，**克隆即可直接运行**。
+`frontend/public/data/` 下的 JSON 已随仓库提供，**克隆即可直接运行**。
 如需从原始数据复现预处理：
 
 ```bash
@@ -63,5 +59,5 @@ python3 preprocess/build_spotify.py
 ## 模块分工与扩展
 
 本模块（宏观时空）与队友负责的微观音频特征模块通过同一套
-`store.js`（状态契约）与 `views/`（视图注册）机制集成：
-新增视图只需实现 `initXxxView(el, data)`，在内部 `subscribe` 状态变化即可加入联动。
+Pinia 状态契约与 `charts/` 视图注册机制集成：
+新增视图只需实现图表初始化函数，并订阅同一状态仓库即可加入联动。
